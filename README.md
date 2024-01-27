@@ -1,7 +1,5 @@
 # ![logo](https://community.trinitycore.org/public/style_images/1_trinitycore.png) TrinityCore (3.3.5)
 
-[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/TrinityCore/TrinityCore.svg)](https://isitmaintained.com/project/TrinityCore/TrinityCore "Average time to resolve an issue") [![Percentage of issues still open](https://isitmaintained.com/badge/open/TrinityCore/TrinityCore.svg)](https://isitmaintained.com/project/TrinityCore/TrinityCore "Percentage of issues still open")
-
 --------------
 
 
@@ -35,13 +33,9 @@ based on the code of that project with extensive changes over time to optimize,
 improve and cleanup the codebase at the same time as improving the in-game
 mechanics and functionality.
 
+[NPCBots](https://github.com/trickerer/Trinity-Bots) is TrinityCore mod.
+
 It is completely open source; community involvement is highly encouraged.
-
-If you wish to contribute ideas or code, please visit our site linked below or
-make pull requests to our [Github repository](https://github.com/TrinityCore/TrinityCore/pulls).
-
-For further information on the TrinityCore project, please visit our project
-website at [TrinityCore.org](https://www.trinitycore.org).
 
 ## Requirements
 
@@ -52,27 +46,22 @@ Windows, Linux and macOS.
 
 ## Install
 
-Detailed installation guides are available in the [wiki](https://trinitycore.info/en/home) for
+Detailed TrinityCore installation guides are available in the [wiki](https://trinitycore.info/en/home) for
 Windows, Linux and macOS.
+NPCBots installation guide is available in the [NPCBots Readme](https://github.com/trickerer/Trinity-Bots#npcbot-mod-installation).
 
 
 ## Reporting issues
 
-Issues can be reported via the [Github issue tracker](https://github.com/TrinityCore/TrinityCore/labels/Branch-3.3.5a).
+NPCBots issues can be reported via the [Github issue tracker](https://github.com/trickerer/Trinity-Bots/issues/).
 
 Please take the time to review existing issues before submitting your own to
 prevent duplicates.
 
-In addition, thoroughly read through the [issue tracker guide](https://community.trinitycore.org/topic/37-the-trinitycore-issuetracker-and-you/) to ensure
-your report contains the required information. Incorrect or poorly formed
-reports are wasteful and are subject to deletion.
-
 
 ## Submitting fixes
 
-C++ fixes are submitted as pull requests via Github. For more information on how to
-properly submit a pull request, read the [how-to: maintain a remote fork](https://community.trinitycore.org/topic/9002-howto-maintain-a-remote-fork-for-pull-requests-tortoisegit/).
-For SQL only fixes, open a ticket; if a bug report exists for the bug, post on an existing ticket.
+C++ fixes are submitted as [pull requests](https://github.com/trickerer/TrinityCore-3.3.5-with-NPCBots/pulls).
 
 
 ## Copyright
@@ -89,7 +78,8 @@ Read file [AUTHORS](AUTHORS).
 
 ## Links
 
-* [Website](https://www.trinitycore.org)
-* [Wiki](https://www.trinitycore.info)
-* [Forums](https://talk.trinitycore.org/)
-* [Discord](https://discord.trinitycore.org/)
+* [NPCBots Readme](https://github.com/trickerer/Trinity-Bots/)
+* [TrinityCore Website](https://www.trinitycore.org)
+* [TrinityCore Wiki](https://www.trinitycore.info)
+* [TrinityCore Forums](https://talk.trinitycore.org/)
+* [TrinityCore Discord](https://discord.trinitycore.org/)

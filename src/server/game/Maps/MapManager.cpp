@@ -38,6 +38,11 @@
 #include "LuaEngine.h"
 #endif
 
+//npcbot
+#include "botdatamgr.h"
+#include "botmgr.h"
+//end npcbot
+
 MapManager::MapManager()
     : _nextInstanceId(0), _scheduledScripts(0)
 {
@@ -65,6 +70,10 @@ void MapManager::Initialize()
     // Start mtmaps if needed.
     if (num_threads > 0)
         m_updater.activate(num_threads);
+
+    //npcbot: load bots
+    BotMgr::Initialize();
+    //end npcbot
 }
 
 void MapManager::InitializeVisibilityDistanceInfo()
@@ -222,6 +231,10 @@ Map::EnterState MapManager::PlayerCannotEnter(uint32 mapid, Player* player, bool
 
 void MapManager::Update(uint32 diff)
 {
+    //npcbot
+    BotDataMgr::Update(diff);
+    //end npcbot
+
     i_timer.Update(diff);
     if (!i_timer.Passed())
         return;
@@ -236,6 +249,10 @@ void MapManager::Update(uint32 diff)
     }
     if (m_updater.activated())
         m_updater.wait();
+
+    //npcbot
+    BotMgr::HandleDelayedTeleports();
+    //end npcbot
 
     for (iter = i_maps.begin(); iter != i_maps.end(); ++iter)
         iter->second->DelayedUpdate(uint32(i_timer.GetCurrent()));

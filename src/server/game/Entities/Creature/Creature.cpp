@@ -60,6 +60,12 @@
 CreatureMovementData::CreatureMovementData() : Ground(CreatureGroundMovementType::Run), Flight(CreatureFlightMovementType::None), Swim(true), Rooted(false), Chase(CreatureChaseMovementType::Run),
 Random(CreatureRandomMovementType::Walk), InteractionPauseTimer(sWorld->getIntConfig(CONFIG_CREATURE_STOP_FOR_PLAYER)) { }
 
+//npcbot
+#include "bot_ai.h"
+#include "botmgr.h"
+#include "bpet_ai.h"
+//end npcbot
+
 std::string CreatureMovementData::ToString() const
 {
     char const* const GroundStates[] = { "None", "Run", "Hover" };
@@ -273,6 +279,11 @@ Creature::Creature(bool isWorldObject): Unit(isWorldObject), MapObject(), m_grou
 
     ResetLootMode(); // restore default loot mode
     m_isTempWorldObject = false;
+
+    //npcbot
+    bot_AI = nullptr;
+    bot_pet_AI = nullptr;
+    //end npcbot
 }
 
 void Creature::AddToWorld()
@@ -376,6 +387,11 @@ bool Creature::IsFormationLeaderMoveAllowed() const
 
 void Creature::RemoveCorpse(bool setSpawnTime, bool destroyForNearbyPlayers)
 {
+    //npcbot
+    if (IsNPCBotOrPet())
+        return;
+    //end npcbot
+
     if (getDeathState() != CORPSE)
         return;
 
@@ -670,6 +686,29 @@ void Creature::SetPhaseMask(uint32 newPhaseMask, bool update)
 
 void Creature::Update(uint32 diff)
 {
+    //npcbot: update helper
+    if (bot_AI)
+    {
+        if (!bot_AI->canUpdate)
+        {
+            return;
+        }
+
+        bot_AI->CommonTimers(diff);
+    }
+    else if (bot_pet_AI)
+    {
+        if (!bot_pet_AI->canUpdate)
+        {
+            //needed for delayed unsummon
+            m_Events.Update(diff);
+            return;
+        }
+
+        bot_pet_AI->CommonTimers(diff);
+    }
+    //end npcbot
+
     if (IsAIEnabled() && m_triggerJustAppeared && m_deathState != DEAD)
     {
         if (m_respawnCompatibilityMode && m_vehicleKit)
@@ -692,6 +731,10 @@ void Creature::Update(uint32 diff)
             break;
         case DEAD:
         {
+            //npcbot
+            if (bot_AI || bot_pet_AI)
+                break;
+            //end npcbot
             if (!m_respawnCompatibilityMode)
             {
                 TC_LOG_ERROR("entities.unit", "Creature {} in wrong state: DEAD (3)", GetGUID().ToString());
@@ -756,8 +799,21 @@ void Creature::Update(uint32 diff)
                 }
                 else m_groupLootTimer -= diff;
             }
+            //npcbot: update dead bots
+            else if (bot_AI)
+            {
+                bot_AI->UpdateDeadAI(diff);
+                break;
+            }
+            else if (bot_pet_AI)
+                break;
+            //end npcbot
             else if (m_corpseRemoveTime <= GameTime::GetGameTime())
             {
+                //npcbot: do not remove corpse
+                if (IsNPCBotOrPet())
+                    break;
+                //end npcbot
                 RemoveCorpse(false);
                 TC_LOG_DEBUG("entities.unit", "Removing corpse... {} ", GetEntry());
             }
@@ -769,6 +825,9 @@ void Creature::Update(uint32 diff)
 
             // creature can be dead after Unit::Update call
             // CORPSE/DEAD state will processed at next tick (in other case death timer will be updated unexpectedly)
+            //npcbot - skip dead state for bots (handled by AI)
+            if (!bot_AI && !bot_pet_AI)
+            //end npcbot
             if (!IsAlive())
                 break;
 
@@ -821,6 +880,11 @@ void Creature::Update(uint32 diff)
             }
 
             Unit::AIUpdateTick(diff);
+
+            //npcbot: skip regeneration
+            if (bot_AI || bot_pet_AI)
+                break;
+            //end npcbot
 
             // creature can be dead after UpdateAI call
             // CORPSE/DEAD state will processed at next tick (in other case death timer will be updated unexpectedly)
@@ -1006,6 +1070,11 @@ bool Creature::AIM_Destroy()
 bool Creature::AIM_Create(CreatureAI* ai /*= nullptr*/)
 {
     Motion_Initialize();
+
+    //npcbot: prevent overriding bot_AI
+    if (bot_AI || bot_pet_AI)
+        return false;
+    //end npcbot
 
     SetAI(ai ? ai : FactorySelector::SelectAI(this));
 
@@ -1279,7 +1348,16 @@ void Creature::SetLootRecipient(Unit* unit, bool withGroup)
     if (unit->GetTypeId() != TYPEID_PLAYER && !unit->IsVehicle())
         return;
 
+    /*
     Player* player = unit->GetCharmerOrOwnerPlayerOrPlayerItself();
+    */
+    //npcbot - loot recipient of bot's vehicle is owner
+    Player* player = nullptr;
+    if (unit->IsVehicle() && unit->GetCharmerGUID().IsCreature() && unit->GetCreator() && unit->GetCreator()->IsPlayer())
+        player = unit->GetCreator()->ToPlayer();
+    else
+        player = unit->GetCharmerOrOwnerPlayerOrPlayerItself();
+    //end npcbot
     if (!player)                                             // normal creature, no player involved
         return;
 
@@ -1310,6 +1388,11 @@ bool Creature::isTappedBy(Player const* player) const
 
 void Creature::SaveToDB()
 {
+    //npcbot: disallow saving generated bots
+    if (IsNPCBot() && GetBotAI() && GetBotAI()->IsWanderer())
+        return;
+    //end npcbot
+
     // this should only be used when the creature has already been loaded
     // preferably after adding to map, because mapid may not be valid otherwise
     CreatureData const* data = sObjectMgr->GetCreatureData(m_spawnId);
@@ -1325,6 +1408,11 @@ void Creature::SaveToDB()
 
 void Creature::SaveToDB(uint32 mapid, uint8 spawnMask, uint32 phaseMask)
 {
+    //npcbot: disallow saving generated bots
+    if (IsNPCBot() && GetBotAI() && GetBotAI()->IsWanderer())
+        return;
+    //end npcbot
+
     // update in loaded data
     if (!m_spawnId)
         m_spawnId = sObjectMgr->GenerateCreatureSpawnId();
@@ -1650,6 +1738,11 @@ bool Creature::LoadFromDB(ObjectGuid::LowType spawnId, Map* map, bool addToMap, 
 
     m_deathState = ALIVE;
 
+    //npcbot: remove respawn time if any
+    if (IsNPCBotOrPet())
+        map->RemoveRespawnTime(SPAWN_TYPE_CREATURE, spawnId, nullptr, true);
+    //end npcbot
+
     m_respawnTime = GetMap()->GetCreatureRespawnTime(m_spawnId);
 
     if (!m_respawnTime && !map->IsSpawnGroupActive(data->spawnGroupData->groupId))
@@ -1697,6 +1790,24 @@ bool Creature::LoadFromDB(ObjectGuid::LowType spawnId, Map* map, bool addToMap, 
     // checked at creature_template loading
     m_defaultMovementType = MovementGeneratorType(data->movementType);
 
+    //npcbot
+    if (IsNPCBot())
+    {
+        //prevent loading npcbot twice (grid unload/load case)
+        if (sWorld->GetMaxPlayerCount() > 0)
+            return false;
+
+        TC_LOG_INFO("entities.unit", "Creature: loading npcbot {} (id: {})", GetName(), GetEntry());
+        ASSERT(!IsInWorld());
+
+        //don't allow removing dead bot's corpse
+        m_respawnCompatibilityMode = true;
+        m_corpseDelay = 0;
+        m_respawnDelay = 0;
+        setActive(true);
+    }
+    //end npcbot
+
     if (addToMap && !GetMap()->AddToMap(this))
         return false;
     return true;
@@ -1710,6 +1821,11 @@ void Creature::SetCanDualWield(bool value)
 
 void Creature::LoadEquipment(int8 id, bool force /*= true*/)
 {
+    //npcbot: prevent loading equipment for bots
+    if (IsNPCBot())
+        return;
+    //end npcbot
+
     if (id == 0)
     {
         if (force)
@@ -1856,6 +1972,11 @@ bool Creature::IsInvisibleDueToDespawn() const
     if (IsAlive() || isDying() || m_corpseRemoveTime > GameTime::GetGameTime())
         return false;
 
+    //npcbot
+    if (bot_AI || bot_pet_AI)
+        return false;
+    //end npcbot
+
     return true;
 }
 
@@ -1873,9 +1994,18 @@ bool Creature::CanStartAttack(Unit const* who, bool force) const
         return false;
 
     // This set of checks is should be done only for creatures
+    //npcbot
+    /*
+    //end npcbot
     if ((IsImmuneToNPC() && !who->HasUnitFlag(UNIT_FLAG_PLAYER_CONTROLLED))
         || (IsImmuneToPC() && who->HasUnitFlag(UNIT_FLAG_PLAYER_CONTROLLED)))
         return false;
+    //npcbot
+    */
+    if ((IsImmuneToNPC() && !(who->HasUnitFlag(UNIT_FLAG_PLAYER_CONTROLLED) || who->IsNPCBotOrPet())) ||
+        (IsImmuneToPC() && (who->HasUnitFlag(UNIT_FLAG_PLAYER_CONTROLLED) || who->IsNPCBotOrPet())))
+        return false;
+    //end npcbot
 
     // Do not attack non-combat pets
     if (who->GetTypeId() == TYPEID_UNIT && who->GetCreatureType() == CREATURE_TYPE_NON_COMBAT_PET)
@@ -2061,6 +2191,11 @@ void Creature::setDeathState(DeathState s)
 
 void Creature::Respawn(bool force)
 {
+    //npcbot
+    if (IsNPCBotOrPet())
+        return;
+    //end npcbot
+
     if (force)
     {
         if (IsAlive())
@@ -2124,6 +2259,11 @@ void Creature::Respawn(bool force)
 
 void Creature::ForcedDespawn(uint32 timeMSToDespawn, Seconds forceRespawnTimer)
 {
+    //npcbot
+    if (IsNPCBotOrPet())
+        return;
+    //end npcbot
+
     if (timeMSToDespawn)
     {
         m_Events.AddEvent(new ForcedDespawnDelayEvent(*this, forceRespawnTimer), m_Events.CalculateTime(Milliseconds(timeMSToDespawn)));
@@ -2391,6 +2531,11 @@ bool Creature::CanAssistTo(Unit const* u, Unit const* enemy, bool checkfaction /
     if (GetCharmerOrOwnerGUID())
         return false;
 
+    //npcbot
+    if (IsNPCBotOrPet())
+        return false;
+    //end npcbot
+
     // only from same creature faction
     if (checkfaction)
     {
@@ -2450,6 +2595,12 @@ void Creature::SaveRespawnTime(uint32 forceDelay)
         ri.type = SPAWN_TYPE_CREATURE;
         ri.spawnId = m_spawnId;
         ri.respawnTime = m_respawnTime;
+
+        //npcbot: save entry for checks
+        if (IsNPCBot())
+            ri.entry = GetEntry();
+        //end npcbot
+
         GetMap()->SaveRespawnInfoDB(ri);
         return;
     }
@@ -2599,6 +2750,16 @@ void Creature::SendZoneUnderAttackMessage(Player* attacker)
 
 uint32 Creature::GetShieldBlockValue() const                  //dunno mob block value
 {
+    //npcbot - bot block value is fully calculated inside botAI
+    if (bot_AI)
+    {
+        uint32 blockValue = bot_AI->GetShieldBlockValue();
+        blockValue += GetTotalAuraModifier(SPELL_AURA_MOD_SHIELD_BLOCKVALUE);
+        blockValue *= GetTotalAuraMultiplier(SPELL_AURA_MOD_SHIELD_BLOCKVALUE_PCT);
+        return uint32(blockValue);
+    }
+    //end npcbot
+
     return (GetLevel()/2 + uint32(GetStat(STAT_STRENGTH)/20));
 }
 
@@ -2656,6 +2817,17 @@ void Creature::UpdateMovementFlags()
     // Do not update movement flags if creature is controlled by a player (charm/vehicle)
     if (IsMovedByClient())
         return;
+
+    //npcbot: do not update movement flags for vehicles controlled by npcbots
+    if (GetCharmerGUID().IsCreature())
+    {
+        if (CreatureTemplate const* bot_template = sObjectMgr->GetCreatureTemplate(GetCharmerGUID().GetEntry()))
+        {
+            if (bot_template->IsNPCBot())
+                return;
+        }
+    }
+    //end npcbot
 
     // Creatures with CREATURE_FLAG_EXTRA_NO_MOVE_FLAGS_UPDATE should control MovementFlags in your own scripts
     if (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_NO_MOVE_FLAGS_UPDATE)
@@ -2731,6 +2903,11 @@ void Creature::RefreshCanSwimFlag(bool recheck)
 
 void Creature::AllLootRemovedFromCorpse()
 {
+    //npcbot
+    if (IsNPCBotOrPet())
+        return;
+    //end npcbot
+
     if (loot.loot_type != LOOT_SKINNING && !IsPet() && GetCreatureTemplate()->SkinLootId && hasLootRecipient())
         if (LootTemplates_Skinning.HaveLootFor(GetCreatureTemplate()->SkinLootId))
             SetUnitFlag(UNIT_FLAG_SKINNABLE);
@@ -3122,6 +3299,15 @@ void Creature::SetDisplayId(uint32 modelId)
         SetBoundingRadius((IsPet() ? 1.0f : minfo->bounding_radius) * GetObjectScale());
         SetCombatReach((IsPet() ? DEFAULT_PLAYER_COMBAT_REACH : minfo->combat_reach) * GetObjectScale());
     }
+
+    //npcbot: send group update for bot pet
+    if (IsNPCBotPet())
+    {
+        if (Creature const* botPetOwner = GetBotPetAI() ? GetBotPetAI()->GetPetsOwner() : nullptr)
+            if (botPetOwner->GetBotAI()->GetGroup())
+                BotMgr::SetBotGroupUpdateFlag(botPetOwner, GROUP_UPDATE_FLAG_PET_MODEL_ID);
+    }
+    //end npcbot
 }
 
 void Creature::SetTarget(ObjectGuid guid)
@@ -3221,6 +3407,13 @@ void Creature::ReleaseSpellFocus(Spell const* focusSpell, bool withDelay)
         if (!HasUnitFlag2(UNIT_FLAG2_CANNOT_TURN))
             ReacquireSpellFocusTarget();
     }
+    //npcbot: bots and botpets do not use delay
+    else if (IsNPCBot() || IsNPCBotPet())
+    {
+        if (!HasUnitFlag2(UNIT_FLAG2_CANNOT_TURN))
+            ReacquireSpellFocusTarget();
+    }
+    //end npcbot
     else // don't allow re-target right away to prevent visual bugs
         _spellFocusInfo.Delay = withDelay ? 1000 : 1;
 
