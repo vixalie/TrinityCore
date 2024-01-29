@@ -3871,7 +3871,7 @@ AuctionHouseBot.Buyer.Recheck.Interval = 20
 #                    false - (disabled)
 #
 #   Eluna.CompatibilityMode
-#       Description: Toggles Eluna between compatibility mode (single-threaded) or multistate mode. 
+#       Description: Toggles Eluna between compatibility mode (single-threaded) or multistate mode.
 #                    Compatibility mode limits the core to a single map update thread.
 #       Default:     true  - (enabled)
 #                    false - (disabled)
@@ -4396,6 +4396,24 @@ Metric.OverallStatusInterval = 1
 
 #Metric.Threshold.world_update_sessions_time = 100
 #Metric.Threshold.worldsession_update_opcode_time = 50
+
+#
+###################################################################################################
+
+###################################################################################################
+#AOE Looting and Mail Excess to Player#
+#######################################
+#
+#    AOE Looting and Mail Excess
+#        Enable this if you want to enable Area of effect with looting (MOP Feature)
+#        Excess items that is looted in will be mailed to the player
+#
+#    AOE.LOOT.enable
+#         Description: Enables Module
+#         Default:    0 - (Disabled)
+#                     1 - (Enabled)
+
+AOE.LOOT.enable = 1
 
 #
 ###################################################################################################
