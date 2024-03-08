@@ -25,7 +25,7 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     libblkid-dev \
     e2fslibs-dev \
     libaudit-dev \
-    libboost-all-dev=1.83.0.2+b2 \
+    libboost-all-dev=1.74.0.3 \
     libbz2-dev \
     libmariadb-dev \
     libncurses-dev \
