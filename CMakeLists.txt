@@ -9,7 +9,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 # We require CMake >= 3.2
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.18)
 
 # add this options before PROJECT keyword
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
@@ -19,13 +19,13 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 project(TrinityCore)
 
 # CMake policies (can not be handled elsewhere)
-cmake_policy(SET CMP0005 OLD)
-if(POLICY CMP0043)
-  cmake_policy(SET CMP0043 OLD) # Disable 'Ignore COMPILE_DEFINITIONS_<Config> properties'
-endif()
+cmake_policy(SET CMP0005 NEW)
+cmake_policy(SET CMP0043 NEW) # Disable 'Ignore COMPILE_DEFINITIONS_<Config> properties'
+cmake_policy(SET CMP0054 NEW) # Only interpret if() arguments as variables or keywords when unquoted - prevents intepreting if (SOME_STRING_VARIABLE MATCHES "MSVC") as if (SOME_STRING_VARIABLE MATCHES "1")
+cmake_policy(SET CMP0074 NEW)
 
-if(POLICY CMP0054)
-  cmake_policy(SET CMP0054 NEW) # Only interpret if() arguments as variables or keywords when unquoted - prevents intepreting if (SOME_STRING_VARIABLE MATCHES "MSVC") as if (SOME_STRING_VARIABLE MATCHES "1")
+if(POLICY CMP0144)
+    cmake_policy(SET CMP0144 NEW) # Allow for the use of the <LANG>_STANDARD target property to specify the language standard for sources in that target
 endif()
 
 # Set RPATH-handing (CMake parameters)
@@ -40,6 +40,9 @@ list(APPEND CMAKE_MODULE_PATH
   "${CMAKE_SOURCE_DIR}/dep/cotire/CMake")
 
 # build in Release-mode by default if not explicitly set
+if(CMAKE_GENERATOR STREQUAL "Ninja Multi-Config")
+  set(CMAKE_DEFAULT_BUILD_TYPE "RelWithDebInfo" CACHE INTERNAL "")
+endif()
 if( NOT CMAKE_BUILD_TYPE )
   set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif()
@@ -67,7 +70,7 @@ find_package(PCHSupport)
 find_package(MySQL)
 
 if(NOT WITHOUT_GIT)
-  find_package(Git)
+  find_package(Git 1.7)
 endif()
 
 # Find revision ID and hash of the sourcetree
