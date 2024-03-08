@@ -8,7 +8,7 @@ RUN mkdir -pv /build/ /artifacts/ /src/
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
- && apt-get -qq -o Dpkg::Use-Pty=0 install --no-install-recommends -y \
+    && apt-get -qq -o Dpkg::Use-Pty=0 install --no-install-recommends -y \
     binutils \
     ca-certificates \
     clang \
@@ -31,10 +31,10 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     p7zip \
     xml2 \
     zlib1g-dev \
- < /dev/null > /dev/null \
- && rm -rf /var/lib/apt/lists/* \
- && update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 \
- && update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang 100
+    < /dev/null > /dev/null \
+    && rm -rf /var/lib/apt/lists/* \
+    && update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 \
+    && update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang 100
 
 # ARG TC_GIT_BRANCH=3.3.5
 # ARG TC_GIT_REPO=https://github.com/williamchai/TrinityCore-3.3.5-with-NPCBots
@@ -46,7 +46,7 @@ COPY sql /src/sql
 COPY src /src/src
 COPY sql /src/sql
 COPY .git /src/.git
-COPY CMakeLists.txt PreLoad.cmake revision_data.h.in.cmake AUTHORS COPYING /src/
+COPY CMakeLists.txt PreLoad.cmake revision_data.h.in.cmake COPYING /src/
 
 RUN mkdir /artifacts/src/
 
@@ -56,8 +56,8 @@ WORKDIR /build
 ARG INSTALL_PREFIX=/opt/trinitycore
 ARG CONF_DIR=/etc
 RUN cmake ../src -DTOOLS=1 -DWITH_WARNINGS=0 -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DCONF_DIR="${CONF_DIR}" -Wno-dev \
- && make -j $(nproc) \
- && make install
+    && make -j $(nproc) \
+    && make install
 
 WORKDIR /artifacts
 
@@ -72,8 +72,8 @@ RUN mkdir -pv usr/share/git-core/templates/branches/ usr/share/git-core/template
 # Save upstream source Git SHA information that we built form.
 ARG TDB_FULL_URL
 RUN git -C /src rev-parse HEAD > .git-rev \
- && git -C /src rev-parse --short HEAD > .git-rev-short \
- && echo "$TDB_FULL_URL" > .tdb-full-url
+    && git -C /src rev-parse --short HEAD > .git-rev-short \
+    && echo "$TDB_FULL_URL" > .tdb-full-url
 
 # Copy binaries and example .dist.conf configuration files.
 RUN tar -cf - \
@@ -96,7 +96,7 @@ RUN tar -cf - \
     /usr/lib/p7zip/7zr \
     /usr/libexec/coreutils/libstdbuf.so \
     /usr/share/ca-certificates \
-  | tar -C /artifacts/ -xvf -
+    | tar -C /artifacts/ -xvf -
 
 # Copy linked libraries and strip symbols from binaries.
 RUN ldd opt/trinitycore/bin/* usr/bin/* usr/lib/git-core/* | grep ' => ' | tr -s '[:blank:]' '\n' | grep '^/' | sort -u | \
@@ -109,22 +109,22 @@ RUN strip \
 
 # Copy example .conf.dist configuration files into expected .conf locations.
 RUN cp -v etc/authserver.conf.dist etc/authserver.conf \
- && cp -v etc/worldserver.conf.dist etc/worldserver.conf \
- && find etc/ -name '*server.conf' -exec sed -i"" -r \
+    && cp -v etc/worldserver.conf.dist etc/worldserver.conf \
+    && find etc/ -name '*server.conf' -exec sed -i"" -r \
     -e 's,^(.*DatabaseInfo[[:space:]]*=[[:space:]]*")[[:alnum:]\.-]*(;.*"),\1mysql\2,' \
     -e 's,^(LogsDir[[:space:]]*=[[:space:]]).*,\1"/logs",' \
     -e 's,^(SourceDirectory[[:space:]]*=[[:space:]]).*,\1"/src",' \
     -e 's,^(MySQLExecutable[[:space:]]*=[[:space:]]).*,\1"/usr/bin/mysql",' \
     '{}' \; \
- && sed -i"" -r \
+    && sed -i"" -r \
     -e 's,^(DataDir[[:space:]]*=[[:space:]]).*,\1"/mapdata",' \
     -e 's,^(Console\.Enable[[:space:]]*=[[:space:]]).*,\10,' \
     etc/worldserver.conf \
- && mkdir -pv "./${INSTALL_PREFIX}/etc/" \
- && ln -s -T /etc/worldserver.conf      "./${INSTALL_PREFIX}/etc/worldserver.conf" \
- && ln -s -T /etc/worldserver.conf.dist "./${INSTALL_PREFIX}/etc/worldserver.conf.dist" \
- && ln -s -T /etc/authserver.conf       "./${INSTALL_PREFIX}/etc/authserver.conf" \
- && ln -s -T /etc/authserver.conf.dist  "./${INSTALL_PREFIX}/etc/authserver.conf.dist"
+    && mkdir -pv "./${INSTALL_PREFIX}/etc/" \
+    && ln -s -T /etc/worldserver.conf      "./${INSTALL_PREFIX}/etc/worldserver.conf" \
+    && ln -s -T /etc/worldserver.conf.dist "./${INSTALL_PREFIX}/etc/worldserver.conf.dist" \
+    && ln -s -T /etc/authserver.conf       "./${INSTALL_PREFIX}/etc/authserver.conf" \
+    && ln -s -T /etc/authserver.conf.dist  "./${INSTALL_PREFIX}/etc/authserver.conf.dist"
 
 # Copy SQL source files. (Exclude old/ and updates/ on a "slim" image).
 ARG WITH_SQL=
@@ -133,8 +133,8 @@ RUN tar -cf - $([ -n "${WITH_SQL}" ] || echo --exclude=/src/sql/old/* --exclude=
 # Optionally download TDB_full_world SQL dump to populate worldserver database.
 WORKDIR /artifacts/src/sql
 RUN [ -z "${WITH_SQL}" ] && exit 0 ; \
- (TC_CHROOT="/artifacts" "../../${INSTALL_PREFIX}/bin/gettdb" || "../../${INSTALL_PREFIX}/bin/gettdb" "${TC_GIT_BRANCH}") \
- && rm -fv *.7z
+    (TC_CHROOT="/artifacts" "../../${INSTALL_PREFIX}/bin/gettdb" || "../../${INSTALL_PREFIX}/bin/gettdb" "${TC_GIT_BRANCH}") \
+    && rm -fv *.7z
 
 # Convenience symlinks.
 WORKDIR /artifacts
@@ -158,7 +158,7 @@ COPY --from=nicolaw/tcpasswd:latest /tcpasswd "${INSTALL_PREFIX}/bin/tcpasswd"
 ARG TRINITY_UID=1000
 ARG TRINITY_GID=1000
 RUN addgroup -g "${TRINITY_GID}" trinity \
- && adduser -G trinity -D -u "${TRINITY_UID}" -h "${INSTALL_PREFIX}" trinity
+    && adduser -G trinity -D -u "${TRINITY_UID}" -h "${INSTALL_PREFIX}" trinity
 USER trinity
 WORKDIR /
 
