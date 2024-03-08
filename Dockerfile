@@ -7,6 +7,8 @@ FROM debian:bullseye-slim AS build
 RUN mkdir -pv /build/ /artifacts/ /src/
 
 ENV DEBIAN_FRONTEND noninteractive
+RUN sed -i s/deb.debian.org/mirrors.aliyun.com/g /etc/apt/sources.list \
+    && apt-get update && apt-get upgrade
 RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     && apt-get -qq -o Dpkg::Use-Pty=0 install --no-install-recommends -y \
     binutils \
