@@ -14,7 +14,7 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     binutils \
     ca-certificates \
     clang \
-    cmake=3.18 \
+    cmake=3.18.4-2+deb11u1 \
     curl \
     default-libmysqlclient-dev \
     default-mysql-client \
@@ -25,7 +25,7 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     libblkid-dev \
     e2fslibs-dev \
     libaudit-dev \
-    libboost-all-dev=1.83.0 \
+    libboost-all-dev=1.83.0.2+b2 \
     libbz2-dev \
     libmariadb-dev \
     libncurses-dev \
