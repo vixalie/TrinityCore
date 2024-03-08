@@ -60,7 +60,7 @@ WORKDIR /build
 # https://trinitycore.info/en/install/Core-Installation/linux-core-installation
 ARG INSTALL_PREFIX=/opt/trinitycore
 ARG CONF_DIR=/etc
-RUN cmake ../src -DTOOLS=1 -DIFCXML_SUPPORT=Off -DWITH_WARNINGS=0 -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DCONF_DIR="${CONF_DIR}" -Wno-dev \
+RUN cmake ../src -DTOOLS=1 -DWITH_WARNINGS=0 -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DCONF_DIR="${CONF_DIR}" -Wno-dev \
     && make -j $(nproc) \
     && make install
 
