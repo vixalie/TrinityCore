@@ -7,7 +7,7 @@ ENV PAGER cat
 RUN mkdir -pv /build/ /artifacts/ /src/
 
 RUN sed -i s/deb.debian.org/mirrors.aliyun.com/g /etc/apt/sources.list
-RUN apt update && apt upgrade
+RUN apt-get update && apt-get upgrade
 RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     && apt-get -qq -o Dpkg::Use-Pty=0 install --no-install-recommends -y \
     autoconf \
@@ -30,7 +30,7 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     libblkid-dev \
     libboost-dev \
     libboost-filesystem-dev \
-    libboost-iostream-dev \
+    libboost-iostreams-dev \
     libboost-locale-dev \
     libboost-program-options-dev \
     libboost-regex-dev \
@@ -41,7 +41,7 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     libmagic-dev \
     libmariadb-dev \
     libmariadb-dev-compat \
-    libmysqlclient-dev \
+    default-libmysqlclient-dev \
     libncurses-dev \
     libpq-dev \
     libreadline-dev \
@@ -49,7 +49,7 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     libsqlite3-dev \
     lsof \
     make \
-    mysql-client \
+    default-mysql-client \
     nano \
     net-tools \
     netcat \
