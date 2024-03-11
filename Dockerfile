@@ -53,7 +53,6 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     && add-apt-repository ppa:git-core/ppa && apt-get install -y git \
     && curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && apt-get install -y git-lfs \
     && git version && git lfs version \
-    && python --version \
     && rm -rf /var/lib/apt/lists/*
 
 RUN update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 && \
