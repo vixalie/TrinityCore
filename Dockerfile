@@ -1,10 +1,10 @@
-FROM debian:bullseye AS builder
+FROM debian:buster AS builder
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV TERM dumb
 ENV PAGER cat
 
-ARG BOOST_VERSION=1.80.0
+ARG BOOST_VERSION=1.58.0
 ARG CMAKE_VERSION=3.25.1
 
 RUN mkdir -pv /build/ /artifacts/ /src/
@@ -31,14 +31,15 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     gzip \
     jq \
     libblkid-dev \
-    libboost1.58-dev \
-    libboost-filesystem1.58-dev \
-    libboost-iostreams1.58-dev \
-    libboost-locale1.58-dev \
-    libboost-program-options1.58-dev \
-    libboost-regex1.58-dev \
-    libboost-system1.58-dev \
-    libboost-thread1.58-dev \
+    # libboost-all-dev \
+    # libboost-dev \
+    # libboost-filesystem-dev \
+    # libboost-iostreams-dev \
+    # libboost-locale-dev \
+    # libboost-program-options-dev \
+    # libboost-regex-dev \
+    # libboost-system-dev \
+    # libboost-thread-dev \
     libbz2-dev \
     libcurl4-openssl-dev \
     libmagic-dev \
@@ -93,14 +94,14 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
 
 # Install Boost
 # https://www.boost.org/doc/libs/1_80_0/more/getting_started/unix-variants.html
-# RUN cd /tmp && \
-#     BOOST_VERSION_MOD=$(echo $BOOST_VERSION | tr . _) && \
-#     wget https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_MOD}.tar.bz2 && \
-#     tar --bzip2 -xf boost_${BOOST_VERSION_MOD}.tar.bz2 && \
-#     cd boost_${BOOST_VERSION_MOD} && \
-#     ./bootstrap.sh --prefix=/usr/local && \
-#     ./b2 install && \
-#     rm -rf /tmp/*
+RUN cd /tmp && \
+    BOOST_VERSION_MOD=$(echo $BOOST_VERSION | tr . _) && \
+    wget https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_MOD}.tar.bz2 && \
+    tar --bzip2 -xf boost_${BOOST_VERSION_MOD}.tar.bz2 && \
+    cd boost_${BOOST_VERSION_MOD} && \
+    ./bootstrap.sh --prefix=/usr/local && \
+    ./b2 install && \
+    rm -rf /tmp/*
 
 RUN update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 && \
     update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang 100
