@@ -10,7 +10,7 @@ ARG CMAKE_VERSION=3.25.1
 RUN mkdir -pv /build/ /artifacts/ /src/
 
 RUN sed -i s/deb.debian.org/mirrors.aliyun.com/g /etc/apt/sources.list
-RUN apt-get update && apt-get upgrade
+# RUN apt-get update && apt-get upgrade
 RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     && apt-get -qq -o Dpkg::Use-Pty=0 install --no-install-recommends -y \
     autoconf \
