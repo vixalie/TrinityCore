@@ -25,14 +25,12 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     libblkid-dev \
     libcurl4-openssl-dev \
     libmagic-dev \
-    libmariadb-dev \
-    libmariadb-dev-compat \
-    default-libmysqlclient-dev \
+    ibmysqlclient-dev \
     libncurses-dev \
     libreadline-dev \
     lsof \
     make \
-    default-mysql-client \
+    mysql-client \
     nano \
     net-tools \
     netcat \
@@ -40,9 +38,6 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     parallel \
     patch \
     pkg-config \
-    postgresql-client \
-    python-is-python3 \
-    retry \
     shellcheck \
     software-properties-common \
     ssh \
