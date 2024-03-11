@@ -31,14 +31,14 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     gzip \
     jq \
     libblkid-dev \
-    libboost-dev1.58.0 \
-    libboost-filesystem-dev1.58.0 \
-    libboost-iostreams-dev1.58.0 \
-    libboost-locale-dev1.58.0 \
-    libboost-program-options-dev1.58.0 \
-    libboost-regex-dev1.58.0 \
-    libboost-system-dev1.58.0 \
-    libboost-thread-dev1.58.0 \
+    libboost1.58-dev \
+    libboost-filesystem1.58-dev \
+    libboost-iostreams1.58-dev \
+    libboost-locale1.58-dev \
+    libboost-program-options1.58-dev \
+    libboost-regex1.58-dev \
+    libboost-system1.58-dev \
+    libboost-thread1.58-dev \
     libbz2-dev \
     libcurl4-openssl-dev \
     libmagic-dev \
