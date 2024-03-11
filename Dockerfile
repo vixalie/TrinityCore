@@ -1,4 +1,4 @@
-FROM registry-internal.cn-beijing.aliyuncs.com/tc_core/tc_builder:7.3.5 AS builder
+FROM registry.cn-beijing.aliyuncs.com/tc_core/tc_builder:7.3.5 AS builder
 
 ENV TERM dumb
 ENV PAGER cat
