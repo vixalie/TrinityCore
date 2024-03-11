@@ -1,4 +1,4 @@
-FROM git.archgrid.xyz/xt/tc_builder:ubuntu_1604 AS builder
+FROM vixalie/tc_builder:7.3.5 AS builder
 
 ENV TERM dumb
 ENV PAGER cat
