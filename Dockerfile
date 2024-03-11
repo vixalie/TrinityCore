@@ -25,7 +25,7 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     libblkid-dev \
     libcurl4-openssl-dev \
     libmagic-dev \
-    ibmysqlclient-dev \
+    libmysqlclient-dev \
     libncurses-dev \
     libreadline-dev \
     lsof \
