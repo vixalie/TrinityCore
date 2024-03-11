@@ -19,7 +19,7 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     ca-certificates \
     ccache \
     clang \
-    # cmake \
+    cmake \
     curl \
     e2fslibs-dev \
     file \
@@ -82,14 +82,14 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     && rm -rf /var/lib/apt/lists/*
 
 # Install CMake
-RUN cd /tmp && \
-    wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz && \
-    tar xzf cmake-${CMAKE_VERSION}.tar.gz && \
-    cd cmake-${CMAKE_VERSION} && \
-    ./bootstrap && \
-    make -j $(nproc) && \
-    make install && \
-    rm -rf /tmp/*
+# RUN cd /tmp && \
+#     wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz && \
+#     tar xzf cmake-${CMAKE_VERSION}.tar.gz && \
+#     cd cmake-${CMAKE_VERSION} && \
+#     ./bootstrap && \
+#     make -j $(nproc) && \
+#     make install && \
+#     rm -rf /tmp/*
 
 # Install Boost
 # https://www.boost.org/doc/libs/1_80_0/more/getting_started/unix-variants.html
