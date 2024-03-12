@@ -12,7 +12,7 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     binutils \
     ca-certificates \
     ccache \
-    clang \
+    # clang \
     cmake \
     curl \
     e2fslibs-dev \
@@ -55,8 +55,8 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     && git version && git lfs version \
     && rm -rf /var/lib/apt/lists/*
 
-RUN update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 && \
-    update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang 100
+# RUN update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 && \
+#     update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang 100
 
 COPY cmake /src/cmake
 COPY contrib /src/contrib
