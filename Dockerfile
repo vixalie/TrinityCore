@@ -8,6 +8,7 @@ RUN mkdir -pv /build/ /artifacts/ /src/
 # RUN apt-get update && apt-get upgrade
 RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     && apt-get -qq -o Dpkg::Use-Pty=0 install --no-install-recommends -y \
+    clang \
     ccache \
     libmysqlclient-dev \
     libreadline-dev \
@@ -17,8 +18,8 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     && git version && git lfs version \
     && rm -rf /var/lib/apt/lists/*
 
-# RUN update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 && \
-#     update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang 100
+RUN update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 && \
+    update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang 100
 
 COPY cmake /src/cmake
 COPY contrib /src/contrib
@@ -35,7 +36,7 @@ WORKDIR /build
 
 ARG INSTALL_PREFIX=/opt/trinitycore
 ARG CONF_DIR=/etc
-RUN cmake ../src -DWITH_WARNINGS=0 -DWITH_COREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=1 -DSCRIPTS=dynamic -DSERVERS=1 -DNOJEM=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Werror" -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DBUILD_TESTING=0 -DCONF_DIR="${CONF_DIR}" -Wno-dev
+RUN cmake ../src -DWITH_WARNINGS=1 -DWITH_COREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=0 -DSCRIPTS=dynamic -DSERVERS=1 -DNOJEM=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Werror" -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DBUILD_TESTING=0 -DCONF_DIR="${CONF_DIR}" -Wno-dev
 RUN make -j $(nproc) \
     && make install
 
