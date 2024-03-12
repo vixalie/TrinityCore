@@ -8,48 +8,9 @@ RUN mkdir -pv /build/ /artifacts/ /src/
 # RUN apt-get update && apt-get upgrade
 RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     && apt-get -qq -o Dpkg::Use-Pty=0 install --no-install-recommends -y \
-    autoconf \
-    binutils \
-    ca-certificates \
     ccache \
-    # clang \
-    cmake \
-    curl \
-    # e2fslibs-dev \
-    file \
-    gettext-base \
-    g++-6 \
-    git \
-    gnupg \
-    gzip \
-    # jq \
-    # libblkid-dev \
-    # libcurl4-openssl-dev \
-    # libmagic-dev \
     libmysqlclient-dev \
-    # libncurses-dev \
     libreadline-dev \
-    # lsof \
-    make \
-    # mysql-client \
-    # nano \
-    # net-tools \
-    # netcat \
-    # openssh-client \
-    # parallel \
-    # patch \
-    pkg-config \
-    # shellcheck \
-    software-properties-common \
-    # ssh \
-    # sudo \
-    # tar \
-    tzdata \
-    unzip \
-    # vim \
-    wget \
-    # xml2 \
-    # zip \
     zlib1g-dev \
     && add-apt-repository ppa:git-core/ppa && apt-get install -y git \
     && curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && apt-get install -y git-lfs \
@@ -74,7 +35,7 @@ WORKDIR /build
 
 ARG INSTALL_PREFIX=/opt/trinitycore
 ARG CONF_DIR=/etc
-RUN cmake ../src -DWITH_WARNINGS=1 -DWITH_COREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=1 -DSCRIPTS=dynamic -DSERVERS=1 -DNOJEM=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Werror" -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DBUILD_TESTING=0 -DCONF_DIR="${CONF_DIR}" -Wno-dev
+RUN cmake ../src -DWITH_WARNINGS=0 -DWITH_COREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=1 -DSCRIPTS=dynamic -DSERVERS=1 -DNOJEM=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Werror" -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DBUILD_TESTING=0 -DCONF_DIR="${CONF_DIR}" -Wno-dev
 RUN make -j $(nproc) \
     && make install
 
