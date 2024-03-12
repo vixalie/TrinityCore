@@ -14,7 +14,7 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     ccache \
     # clang \
     cmake \
-    # curl \
+    curl \
     # e2fslibs-dev \
     file \
     gettext-base \
