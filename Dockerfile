@@ -100,7 +100,7 @@ RUN cp -v etc/bnetserver.conf.dist etc/bnetserver.conf \
     && ln -s -T /etc/bnetserver.conf.dist  "./${INSTALL_PREFIX}/etc/authserver.conf.dist"
 
 
-FROM alpine:3.19
+FROM debian:oldoldstable-slim
 
 ARG INSTALL_PREFIX=/opt/trinitycore
 ENV LD_LIBRARY_PATH=/lib:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:${INSTALL_PREFIX}/lib \
