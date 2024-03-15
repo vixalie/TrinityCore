@@ -100,7 +100,7 @@ RUN cp -v etc/bnetserver.conf.dist etc/bnetserver.conf \
     && ln -s -T /etc/bnetserver.conf.dist  "./${INSTALL_PREFIX}/etc/authserver.conf.dist"
 
 
-FROM debian:buster-slim
+FROM busybox:1.36-glibc
 
 ARG INSTALL_PREFIX=/opt/trinitycore
 ENV LD_LIBRARY_PATH=/lib:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:${INSTALL_PREFIX}/lib \
@@ -108,11 +108,11 @@ ENV LD_LIBRARY_PATH=/lib:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:${INSTA
 
 COPY --from=builder /artifacts /
 
-# ARG TRINITY_UID=1000
-# ARG TRINITY_GID=1000
-# RUN addgroup -g "${TRINITY_GID}" trinity \
-#     && adduser -G trinity -D -u "${TRINITY_UID}" -h "${INSTALL_PREFIX}" trinity
-# USER trinity
+ARG TRINITY_UID=1000
+ARG TRINITY_GID=1000
+RUN addgroup -g "${TRINITY_GID}" trinity
+RUN adduser -G trinity -D -u "${TRINITY_UID}" -h "${INSTALL_PREFIX}" trinity
+USER trinity
 WORKDIR /
 
 VOLUME ["/opt/trinitycore/logs", "/opt/trinitycore/data", "opt/trinitycore/sql"]
