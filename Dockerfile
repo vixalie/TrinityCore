@@ -110,7 +110,7 @@ COPY --from=builder /artifacts /
 
 ARG TRINITY_UID=1000
 ARG TRINITY_GID=1000
-RUN addgroup -g "${TRINITY_GID}" trinity
+RUN groupadd -g "${TRINITY_GID}" trinity
 RUN adduser -G trinity -D -u "${TRINITY_UID}" -h "${INSTALL_PREFIX}" trinity
 USER trinity
 WORKDIR /
