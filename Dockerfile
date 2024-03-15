@@ -108,11 +108,11 @@ ENV LD_LIBRARY_PATH=/lib:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:${INSTA
 
 COPY --from=builder /artifacts /
 
-ARG TRINITY_UID=1000
-ARG TRINITY_GID=1000
-RUN addgroup -g "${TRINITY_GID}" trinity \
-    && adduser -G trinity -D -u "${TRINITY_UID}" -h "${INSTALL_PREFIX}" trinity
-USER trinity
+# ARG TRINITY_UID=1000
+# ARG TRINITY_GID=1000
+# RUN addgroup -g "${TRINITY_GID}" trinity \
+#     && adduser -G trinity -D -u "${TRINITY_UID}" -h "${INSTALL_PREFIX}" trinity
+# USER trinity
 WORKDIR /
 
 VOLUME ["/opt/trinitycore/logs", "/opt/trinitycore/data", "opt/trinitycore/sql"]
