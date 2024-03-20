@@ -10,7 +10,6 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     && apt-get -qq -o Dpkg::Use-Pty=0 install --no-install-recommends -y \
     clang \
     ccache \
-    mysql-client \
     libmysqlclient-dev \
     libreadline-dev \
     zlib1g-dev \
@@ -68,6 +67,7 @@ RUN tar -cf - \
     /usr/bin/xml2 \
     /usr/lib/git-core/git-remote-http* \
     /usr/lib/p7zip/7zr \
+    /usr/lib//x86_64-linux-gnu \
     /usr/libexec/coreutils/libstdbuf.so \
     /usr/share/ca-certificates \
     | tar -C /artifacts/ -xvf -
