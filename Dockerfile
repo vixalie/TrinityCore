@@ -10,6 +10,7 @@ RUN apt-get -qq -o Dpkg::Use-Pty=0 update \
     && apt-get -qq -o Dpkg::Use-Pty=0 install --no-install-recommends -y \
     clang \
     ccache \
+    default-mysql-client \
     libmysqlclient-dev \
     libreadline-dev \
     zlib1g-dev \
