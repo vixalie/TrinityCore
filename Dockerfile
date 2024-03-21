@@ -66,6 +66,7 @@ RUN tar -cf - \
     /usr/bin/stdbuf \
     /usr/bin/xml2 \
     /usr/lib/git-core/git-remote-http* \
+    /usr/lib/ncurses \
     /usr/lib/p7zip/7zr \
     /usr/lib//x86_64-linux-gnu \
     /usr/libexec/coreutils/libstdbuf.so \
@@ -111,6 +112,6 @@ COPY --from=builder /artifacts /
 
 WORKDIR /
 
-VOLUME ["/opt/trinitycore/logs", "/opt/trinitycore/data", "opt/trinitycore/sql"]
+VOLUME ["/opt/trinitycore/logs", "/opt/trinitycore/data", "/src/sql"]
 
 ARG TC_GIT_BRANCH=7.3.5
