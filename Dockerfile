@@ -105,8 +105,7 @@ RUN cp -v etc/bnetserver.conf.dist etc/bnetserver.conf \
 FROM debian:stretch-slim
 
 ARG INSTALL_PREFIX=/opt/trinitycore
-ENV
-LD_LIBRARY_PATH=/lib:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:${INSTALL_PREFIX}/lib:/usr/lib/ncurses/lib \
+ENV LD_LIBRARY_PATH=/lib:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:${INSTALL_PREFIX}/lib:/usr/lib/ncurses/lib \
     PATH=/bin:/usr/bin:${INSTALL_PREFIX}/bin
 
 COPY --from=builder /artifacts /
